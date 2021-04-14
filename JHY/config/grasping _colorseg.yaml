@@ -1,0 +1,43 @@
+initial_position:
+  - 0.2
+  - 0.0
+  - 0.7
+  - 3.14
+  - 0
+  - 1.57 # -0.785
+
+check_position:
+  - 0.35
+  - 0.5
+  - 0.4
+  - 3.14
+  - 0
+  - 0.785
+
+drop_position:
+  - 0.35
+  - 0.0
+  - 0.28
+  - 3.14
+  - 0
+  - 1.57
+
+initial_angle: 1.57         # angle for the gripper
+effector_offset: 0.2        # distance from flann center to the grasping center (in meter)
+grasp_prepare_offset: 0.15  # grasping prepare height
+
+width: 1280               # desired width of camera stream
+height: 720               # desired height of camera stream
+fps: 30                   # desired frame rate from camera
+
+attmp_num: 50
+
+check_threshold: 25
+
+matrix_path: /home/doyle/Me336/ME336-2021Spring/JHY/output/cali_data/2021-04-06-16:09:11.591801.csv
+
+grasping_area:
+  - 178
+  - 542
+  - 433
+  - 891
