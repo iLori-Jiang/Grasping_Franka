@@ -14,6 +14,6 @@ from numpy.linalg import inv
 
 
 if __name__ == '__main__':
-    # filename_npz = './JHY/output/cali_data/2021-04-06-16:09:11.591813.npz'
-    filename_npz = './JHY/output/cali_data/2021-04-06-16:02:54.839241.npz'
+    # filename_npz = './Grasping_Franka/output/cali_data/2021-04-06-16:09:11.591813.npz'
+    filename_npz = './Grasping_Franka/output/cali_data/2021-04-06-16:02:54.839241.npz'
     check_trans_matrix_from_file(filename_npz)

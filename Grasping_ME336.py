@@ -106,7 +106,7 @@ if __name__ == '__main__':
     """ start picking loop"""
     place_xyzrt = [0.3, -0.5, 0.4, 3.14, 0.0, -1.57]
     crop_bounding = [300, 720, 300, 1000]
-    hand_eye_matrix = np.load('./configs/E_T_B_JHY.npy')
+    hand_eye_matrix = np.load('./configs/E_T_B_Grasping_Franka.npy')
     while 1:
         frame = camera.get_frame()
         color = frame.color_image[0]

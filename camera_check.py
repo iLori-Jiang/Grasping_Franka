@@ -29,7 +29,7 @@ if __name__ == '__main__':
     # camera and robot driver
     print('work_dir: ', _root_path)
     '''
-    camera = Realsense('./JHY/config/camera_rs_d435.yaml')
+    camera = Realsense('./Grasping_Franka/config/camera_rs_d435.yaml')
 
     frame = camera.get_frame()
     color = frame.color_image[0]

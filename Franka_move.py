@@ -13,7 +13,7 @@ if __name__ == '__main__':
     sys.path.append(_root_path)
     os.chdir(_root_path)
     print('work_dir: ', _root_path)
-    FC = FrankaController('./JHY/config/franka.yaml')
+    FC = FrankaController('./Grasping_Franka/config/franka.yaml')
     print(FC.getJoint())
 
     '''

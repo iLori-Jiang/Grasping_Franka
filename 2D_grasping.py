@@ -87,8 +87,8 @@ if __name__ == '__main__':
     # camera and robot driver
     print('work_dir: ', _root_path)
     cam = Realsense(frame_width=1280, frame_height=720, fps=30)
-    cfg = read_cfg('./JHY/config/grasping _colorseg.yaml')
-    arm = FrankaController('./JHY/config/franka.yaml')
+    cfg = read_cfg('./Grasping_Franka/config/grasping _colorseg.yaml')
+    arm = FrankaController('./Grasping_Franka/config/franka.yaml')
     cs = ComSwitch()  # gripper
 
     ''' Loading config '''
@@ -116,7 +116,7 @@ if __name__ == '__main__':
     stored_exception = None
 
     ''' Ready to store the data '''
-    csv_filename = "./JHY/output/result/" + str(datetime.now()).replace(' ', '-') + ".csv"
+    csv_filename = "./Grasping_Franka/output/result/" + str(datetime.now()).replace(' ', '-') + ".csv"
     csv_header = ['num', 'if_success']
 
     with open(csv_filename, 'w', encoding='utf-8', newline='') as f:

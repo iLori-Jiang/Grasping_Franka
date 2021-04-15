@@ -134,9 +134,9 @@ if __name__ == '__main__':
 
     print('work_dir: ', _root_path)
 
-    arm = FrankaController('./JHY/config/franka.yaml')
+    arm = FrankaController('./Grasping_Franka/config/franka.yaml')
     cam = Realsense(frame_width=1280, frame_height=720, fps=30)
-    cfg = read_cali_cfg("./JHY/config/calibration.yaml")
+    cfg = read_cali_cfg("./Grasping_Franka/config/calibration.yaml")
 
     initial_pose = cfg['initial_position']
 
@@ -255,7 +255,7 @@ if __name__ == '__main__':
     print("H:\n", base_T_cam_H)
     # cam_T_marker_mats_filename = ROOT + cfg['save_dir'] + "cam_T_marker" + str(datetime.now()).replace(' ', '-') + ".csv"
 
-    file_path = _root_path + '/JHY/output'
+    file_path = _root_path + '/Grasping_Franka/output'
     filename_csv = file_path + cfg['save_dir'] + str(datetime.now()).replace(' ', '-') + ".csv"
     filename_npz = file_path + cfg['save_dir'] + str(datetime.now()).replace(' ', '-') + ".npz"
 
