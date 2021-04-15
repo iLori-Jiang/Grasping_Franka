@@ -1,5 +1,4 @@
 # Perform Eye-on-base calibration
-import time
 import sys
 import os
 
