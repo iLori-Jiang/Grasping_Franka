@@ -32,7 +32,7 @@ fps: 30                   # desired frame rate from camera
 
 attmp_num: 50
 
-check_threshold: 25
+check_threshold: 25     # threshold of the white area in the frame, to judge whether an object is left in the frame
 
 matrix_path: /home/doyle/Me336/ME336-2021Spring/JHY/output/cali_data/2021-04-06-16:09:11.591801.csv
 
