@@ -15,12 +15,12 @@ import numpy as np
 import cv2 as cv
 
 # import gripper_control as gripper
-from CH340 import ComSwitch
+from Grasping_Franka.Driver.CH340 import ComSwitch
 
 # from deepclaw.driver.sensors.camera.Realsense_L515 import Realsense
-from realsense_wapper import Realsense
+from Grasping_Franka.Driver.realsense_wapper import Realsense
 from deepclaw.driver.arms.franka.FrankaController import FrankaController
-from get_obj_by_color import get_obj_bbox, check_gripper_bbox
+from Grasping_Franka.Utils.get_obj_by_color import get_obj_bbox
 from deepclaw.modules.calibration.Calibration2D import Calibration2D
 
 
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     # camera and robot driver
     print('work_dir: ', _root_path)
     cam = Realsense(frame_width=1280, frame_height=720, fps=30)
-    cfg = read_cfg('./Grasping_Franka/config/grasping _colorseg.yaml')
+    cfg = read_cfg('./Grasping_Franka/config/2D_grasping.yaml')
     arm = FrankaController('./Grasping_Franka/config/franka.yaml')
     cs = ComSwitch()  # gripper
 

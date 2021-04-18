@@ -15,12 +15,12 @@ import numpy as np
 import cv2 as cv
 
 # import gripper_control as gripper
-from CH340 import ComSwitch
+from Grasping_Franka.Driver.CH340 import ComSwitch
 
 # from deepclaw.driver.sensors.camera.Realsense_L515 import Realsense
-from realsense_wapper import Realsense
+from Grasping_Franka.Driver.realsense_wapper import Realsense
 from deepclaw.driver.arms.franka.FrankaController import FrankaController
-from get_obj_by_color import get_obj_bbox, check_gripper_bbox
+from Grasping_Franka.Utils.get_obj_by_color import get_obj_bbox
 
 
 def read_cfg(path):

@@ -8,21 +8,15 @@ work_dir:  /home/doyle/Me336/ME336-2021Spring
 work_dir:  /home/doyle/Me336/ME336-2021Spring
 '''
 
-_root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(_root_path)
 os.chdir(_root_path)
 print('work_dir: ', _root_path)
 
-import time
-import yaml
-import numpy as np
-import matplotlib.pyplot as plt
 import cv2
-from scipy.spatial.transform import Rotation as R
 
-from deepclaw.modules.end2end.yolov5.YOLO5 import Yolo5
 # from deepclaw.driver.sensors.camera.Realsense_L515 import Realsense
-from realsense_wapper import Realsense
+from Grasping_Franka.Driver.realsense_wapper import Realsense
 
 
 if __name__ == '__main__':

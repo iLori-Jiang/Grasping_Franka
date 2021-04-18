@@ -15,14 +15,14 @@ import numpy as np
 import cv2 as cv
 
 # import gripper_control as gripper
-from CH340 import ComSwitch
+from Grasping_Franka.Driver.CH340 import ComSwitch
 
 # from deepclaw.driver.sensors.camera.Realsense_L515 import Realsense
-from realsense_wapper import Realsense
+from Grasping_Franka.Driver.realsense_wapper import Realsense
 from deepclaw.driver.arms.franka.FrankaController import FrankaController
-from get_obj_by_color import get_obj_bbox, check_gripper_bbox
+from Grasping_Franka.Utils.get_obj_by_color import get_obj_bbox
+from deepclaw.modules.calibration.Calibration2D import Calibration2D
 
-from deepclaw.driver.arms.ArmController import ArmController
 
 def read_cfg(path):
     with open(path, 'r') as stream:
@@ -39,46 +39,47 @@ def load_cam_T_base_matrix(file_path):
     return cam_T_base_R, cam_T_base_t
 
 
-def location_transformation():
+def location_transformation(crop_bounding, hand_eye):
+    bbox = [0, 0, 0, 0]
+    temp = [0.5, 0]
     time.sleep(0.5)
 
     ''' Load image '''
-    depth_img, color_img = cam.get_frame_cv()
+    isObject = False
+    while (isObject == False):
+        depth_img, color_img = cam.get_frame_cv()
 
-    bbox = get_obj_bbox(color_img, y1, y2, x1, x2)
+        bbox = get_obj_bbox(color_img, crop_bounding[0], crop_bounding[1], crop_bounding[2], crop_bounding[3])
 
-    cv.rectangle(color_img, (bbox[0], bbox[1]), (bbox[0] + bbox[2], bbox[1] + bbox[3]), (0, 255, 0), 2)
+        cv.rectangle(color_img, (bbox[0], bbox[1]), (bbox[0] + bbox[2], bbox[1] + bbox[3]), (0, 255, 0), 2)
 
-    obj_center_row = int(bbox[1] + bbox[3] / 2)
-    obj_center_col = int(bbox[0] + bbox[2] / 2)
-    # print("row: {}, col: {}".format(obj_center_row, obj_center_col))
+        obj_center_row = int(bbox[1] + bbox[3] / 2)
+        obj_center_col = int(bbox[0] + bbox[2] / 2)
+        # print("row: {}, col: {}".format(obj_center_row, obj_center_col))
+        if (bbox[2] * bbox[3] >= check_threshold):
+            isObject = True
+            cv.circle(color_img, (obj_center_col, obj_center_row), 2, (0, 255, 0), 2)
 
-    cv.circle(color_img, (obj_center_col, obj_center_row), 2, (0, 255, 0), 2)
+            ''' Visualization '''
+            cv.imshow('result', color_img)
+            cv.waitKey(10)
 
-    ''' Visualization '''
-    cv.imshow('result', color_img)
-    cv.waitKey(10)
+            temp = hand_eye.cvt(obj_center_col, obj_center_row)
+            break
+        else:
+            print("No object detected!")
+            time.sleep(2)
 
     ''' Compute target coordinate in camera frame '''
-    target_in_cam_z = depth_img[obj_center_row, obj_center_col] * cam.depth_scale
-    target_in_cam_x = np.multiply(obj_center_col - cam.intrinsics['cx'], target_in_cam_z / cam.intrinsics['fx'])
-    target_in_cam_y = np.multiply(obj_center_row - cam.intrinsics['cy'], target_in_cam_z / cam.intrinsics['fy'])
+    if bbox[3] >= bbox[2]:
+        angle = initial_angle
+    else:
+        angle = initial_angle - 1.57
 
-    print("Target in camera frame:\n", [target_in_cam_x, target_in_cam_y, target_in_cam_z])
-
-    target_in_cam = np.array([target_in_cam_x, target_in_cam_y, target_in_cam_z])
-    target_in_base = R.dot(target_in_cam) + t
-
-    print("Target in base frame:\n", target_in_base)
+    # grasp pose in euler angle
+    target_in_base = [temp[0], temp[1], effector_offset, 3.14, 0, angle]
 
     return target_in_base
-
-
-def print_detection_info(res):
-    print("Detection number: ", res.size())
-    print("----------------------------------")
-    for r in res:
-        print("classid: ", r.classid)
 
 
 if __name__ == '__main__':
@@ -86,35 +87,38 @@ if __name__ == '__main__':
     # camera and robot driver
     print('work_dir: ', _root_path)
     cam = Realsense(frame_width=1280, frame_height=720, fps=30)
-    cfg = read_cfg('./Grasping_Franka/config/grasping _colorseg.yaml')
+    cfg = read_cfg('./Grasping_Franka/config/2D_grasping.yaml')
     arm = FrankaController('./Grasping_Franka/config/franka.yaml')
-    # cs = ComSwitch()    # gripper
+    # cs = ComSwitch()  # gripper
 
     ''' Loading config '''
     initial_pose = cfg['initial_position']  # should be outside the grasping area
-    # check_position = cfg['check_position']
+    initial_pose[2] += -0.17
+    initial_pose[5] += -1.57
     drop_position = cfg['drop_position']
+    drop_position[2] += -0.17
+    drop_position[5] += -1.57
+    check_position = cfg['check_position']
+    check_position[2] += -0.17
+    check_position[5] += -1.57
 
     grasp_pre_offset = cfg['grasp_prepare_offset']
     effector_offset = cfg['effector_offset']  # distance between the flange and the center of gripper, positive value
+    effector_offset += -0.14
+    initial_angle = cfg['initial_angle']
+    initial_angle += -1.57
 
     check_threshold = cfg['check_threshold']
 
     attmp_num = cfg['attmp_num']  # total grasp number
 
-    cropping_area_temp = cfg['grasping_area']
-
-    y1 = cropping_area_temp[0]
-    y2 = cropping_area_temp[1]
-    x1 = cropping_area_temp[2]
-    x2 = cropping_area_temp[3]
-
-    ''' Load calibration matrix '''
-    R, t = load_cam_T_base_matrix(cfg['matrix_path'])
-    print("Load R, t from file:\nR:\n", R, "\nt:\n", t)
+    crop_bounding = cfg['grasping_area']
+    cali_path = './configs/basic_config/cali2D.yaml'
+    hand_eye = Calibration2D(cali_path)
+    print("Calibration2D complete")
 
     print("Moving to initial position...")
-    arm.move_p(initial_pose)
+    arm.move_p(initial_pose, 0.8, 0.8)
     print("Moving to initial position... Done")
 
     stored_exception = None
@@ -129,7 +133,7 @@ if __name__ == '__main__':
 
     ''' Starting Grasping '''
     # arm.move_p(check_position) # Test
-    current_num = 0     # recording the grasping attempt
+    current_num = 0  # recording the grasping attempt
     while current_num < attmp_num:
 
         try:
@@ -137,29 +141,35 @@ if __name__ == '__main__':
                 break
 
             ''' Get the location of the object '''
-            target_in_base = location_transformation()
+            target_in_base = location_transformation(crop_bounding=crop_bounding, hand_eye=hand_eye)
 
             ''' Exerting grasping '''
-            prepare_pos = [target_in_base[0], target_in_base[1], target_in_base[2] + grasp_pre_offset + effector_offset,
-                           3.14, 0, 0]  # pose: perpendicular to the plane
+            prepare_pos = target_in_base.copy()  # pose: perpendicular to the plane
+            prepare_pos[2] = prepare_pos[2] + grasp_pre_offset
             arm.move_p(prepare_pos)
 
             # cs.open()
             arm.gripperOpen()
-            arm.move_p([target_in_base[0], target_in_base[1], target_in_base[2] + effector_offset, 3.14, 0, 0])
+            arm.move_p(target_in_base, velocity=0.1, accelerate=0.1)
             # cs.close()
             arm.gripperGrasp()
             time.sleep(0.5)
 
             ''' Move to check position '''
-            # arm.move_p(check_position)
-            arm.move_p(initial_pose)
+            lift_up = target_in_base.copy()
+            lift_up[2] = check_position[2]
+            arm.move_p(lift_up)
+            arm.move_p(check_position)
 
             ''' Perform success check '''
             _, color_check = cam.get_frame_cv()
-            bbox_check = get_obj_bbox(color_check, y1, y2, x1, x2)
+            bbox_check = get_obj_bbox(color_check, crop_bounding[0], crop_bounding[1], crop_bounding[2],
+                                      crop_bounding[3])
 
             data = []
+
+            cv.imshow('result', color_check)
+            cv.waitKey(10)
 
             print("current area = %f" % (bbox_check[2] * bbox_check[3]))
             print("threshold area = %f" % check_threshold)
@@ -173,18 +183,22 @@ if __name__ == '__main__':
                 data.append(str(current_num))
                 data.append(str(0))  # Fail
 
-            '''
             with open(csv_filename, 'a+', encoding='utf-8', newline='') as f:
                 writer = csv.writer(f)
                 writer.writerow(data)
-            '''
 
             ''' Move to drop position and drop object '''
+            drop_up = drop_position.copy()
+            drop_up[2] = check_position[2]
+            arm.move_p(drop_up)
             arm.move_p(drop_position)
             # cs.open()
             arm.gripperOpen()
 
             ''' Back to initial position '''
+            depart_pos = drop_position.copy()
+            depart_pos[2] = depart_pos[2] + grasp_pre_offset
+            arm.move_p(depart_pos)
             arm.move_p(initial_pose)
 
             current_num += 1

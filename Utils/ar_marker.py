@@ -65,7 +65,7 @@ def get_mat_cam_T_marker(color_frame, maker_size, intr_matrix, dist_coeff, repea
 
 if __name__ == '__main__':
 
-    from realsense_wapper import Realsense
+    from Grasping_Franka.Driver.realsense_wapper import Realsense
 
     cam = Realsense(frame_width=1280, frame_height=720, fps=30)
 

@@ -3,7 +3,7 @@ import csv
 result = {'0': 0, '1': 0}
 
 count = 0
-with open('/home/doyle/Me336/ME336-2021Spring/Grasping_Franka/output/result/C4_cutter7.csv') as file:
+with open('/Grasping_Franka/output/result/First_round/obj1_bare.csv') as file:
     f_csv = csv.reader(file)
     for row in f_csv:
         if count != 0:

@@ -9,7 +9,7 @@ from deepclaw.driver.arms.franka.FrankaController import FrankaController
 
 
 if __name__ == '__main__':
-    _root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    _root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     sys.path.append(_root_path)
     os.chdir(_root_path)
     print('work_dir: ', _root_path)

@@ -1,13 +1,13 @@
 import sys
 import os
 
-_root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(_root_path)
 os.chdir(_root_path)
 print('work_dir: ', _root_path)
 
 # from deepclaw.driver.sensors.camera.Realsense_L515 import Realsense
-from realsense_wapper import Realsense
+from Grasping_Franka.Driver.realsense_wapper import Realsense
 import cv2
 
 

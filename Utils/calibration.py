@@ -2,7 +2,7 @@
 import sys
 import os
 
-_root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_root_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(_root_path)
 os.chdir(_root_path)
 print('work_dir: ', _root_path)
@@ -12,10 +12,10 @@ import cv2
 import numpy as np
 from numpy.linalg import inv
 
-import ar_marker
+from Grasping_Franka.Utils import ar_marker
 
 from datetime import datetime
-from realsense_wapper import Realsense
+from Grasping_Franka.Driver.realsense_wapper import Realsense
 from deepclaw.driver.arms.franka.FrankaController import FrankaController
 
 

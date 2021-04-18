@@ -30,7 +30,7 @@ width: 1280               # desired width of camera stream
 height: 720               # desired height of camera stream
 fps: 30                   # desired frame rate from camera
 
-attmp_num: 30
+attmp_num: 40
 
 check_threshold: 25     # threshold of the white area in the frame, to judge whether an object is left in the frame
 
