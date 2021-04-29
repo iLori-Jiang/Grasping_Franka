@@ -72,9 +72,9 @@ def location_transformation(crop_bounding, hand_eye):
 
     ''' Compute target coordinate in camera frame '''
     if bbox[3] >= bbox[2]:
-        angle = initial_angle - 1.57
-    else:
         angle = initial_angle
+    else:
+        angle = initial_angle - 1.57
 
     # grasp pose in euler angle
     target_in_base = [temp[0], temp[1], effector_offset, 3.14, 0, angle]
@@ -93,11 +93,13 @@ if __name__ == '__main__':
 
     ''' Loading config '''
     initial_pose = cfg['initial_position']  # should be outside the grasping area
+    initial_joint = cfg['initial_joint']
     drop_position = cfg['drop_position']
     check_position = cfg['check_position']
+    check_joint = cfg['check_joint']
 
     grasp_pre_offset = cfg['grasp_prepare_offset']
-    effector_offset = cfg['effector_offset']  # distance between the flange and the center of gripper, positive value
+    effector_offset = cfg['effector_offset_2']  # distance between the flange and the center of gripper, positive value
     initial_angle = cfg['initial_angle']
 
     check_threshold = cfg['check_threshold']
@@ -110,7 +112,7 @@ if __name__ == '__main__':
     print("Calibration2D complete")
 
     print("Moving to initial position...")
-    arm.move_p(initial_pose, 0.8, 0.8)
+    arm.move_j(initial_joint)
     print("Moving to initial position... Done")
 
     stored_exception = None
@@ -151,6 +153,8 @@ if __name__ == '__main__':
             lift_up = target_in_base.copy()
             lift_up[2] = check_position[2]
             arm.move_p(lift_up)
+
+            #arm.move_j(check_joint)
             arm.move_p(check_position)
 
             ''' Perform success check '''
@@ -191,7 +195,8 @@ if __name__ == '__main__':
             depart_pos = drop_position.copy()
             depart_pos[2] = depart_pos[2] + grasp_pre_offset
             arm.move_p(depart_pos)
-            arm.move_p(initial_pose)
+            #arm.move_p(initial_pose)
+            arm.move_j(initial_joint)
 
             current_num += 1
 

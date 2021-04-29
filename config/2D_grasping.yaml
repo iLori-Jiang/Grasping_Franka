@@ -6,6 +6,15 @@ initial_position:
   - 0
   - 1.57 # -0.785
 
+initial_joint:
+  - 0.016889297269194355
+  - -0.9558921143950705
+  - -0.006456802549563263
+  - -2.1330765712441857
+  - -0.00542805631322928
+  - 1.1762153487693685
+  - -1.558628718536133
+
 check_position:
   - 0.35
   - 0.5
@@ -13,6 +22,15 @@ check_position:
   - 3.14
   - 0
   - 0.785
+
+check_joint:
+  - -1.494359990636408
+  - -0.2851035552468367
+  - 2.394858798563542
+  - -1.8701083893458574
+  - 0.21556217130056773
+  - 2.0676722230762334
+  - 0.030457724331140697
 
 drop_position:
   - 0.4
@@ -24,6 +42,7 @@ drop_position:
 
 initial_angle: 1.57         # angle for the gripper
 effector_offset: 0.2        # distance from flann center to the grasping center (in meter)
+effector_offset_2: 0.213
 grasp_prepare_offset: 0.15  # grasping prepare height
 
 width: 1280               # desired width of camera stream
