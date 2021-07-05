@@ -41,12 +41,19 @@ class Realsense(object):
             # set camera parameters
             for i in range(len(self.cfg.get_device().sensors)):
                 if self.cfg.get_device().sensors[i].is_color_sensor():
-                    # set color camera
                     color_sensor = self.cfg.get_device().sensors[i]
-                    color_sensor.set_option(rs.option.enable_auto_exposure, 0)  # manual exposure
-                    # color_sensor.set_option(rs.option.enable_auto_exposure, 1)  # auto exposure
+                    # manual exposure
+                    color_sensor.set_option(rs.option.enable_auto_exposure, False)
                     color_sensor.set_option(rs.option.exposure, exposure)
                     # color_sensor.set_option(rs.option.gain, 100)
+                    print("camera exposure: ", color_sensor.get_option(rs.option.exposure) * 0.1, 'ms')
+        else:
+            for i in range(len(self.cfg.get_device().sensors)):
+                if self.cfg.get_device().sensors[i].is_color_sensor():
+                    color_sensor = self.cfg.get_device().sensors[i]
+                    # auto exposure
+                    color_sensor.set_option(rs.option.enable_auto_exposure, True)
+                    color_sensor.set_option(rs.option.auto_exposure_priority, True)
                     print("camera exposure: ", color_sensor.get_option(rs.option.exposure) * 0.1, 'ms')
 
         print("------ Realsense start info ------ ")
