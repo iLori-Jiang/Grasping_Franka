@@ -4,7 +4,7 @@ import cv2
 
 
 class Realsense(object):
-    def __init__(self, frame_width=640, frame_height=480, fps=30, color_format="bgr8", exposure=None):
+    def __init__(self, frame_width=640, frame_height=480, fps=30, color_format="bgr8", exposure=None, white_balance=None, contrast=50, sharpness=50):
         # Configure depth and color streams
         self.pipeline = rs.pipeline()
 
@@ -37,25 +37,6 @@ class Realsense(object):
         depth_sensor = self.cfg.get_device().first_depth_sensor()
         self.depth_scale = round(depth_sensor.get_depth_scale(), 4)
 
-        if exposure is not None:
-            # set camera parameters
-            for i in range(len(self.cfg.get_device().sensors)):
-                if self.cfg.get_device().sensors[i].is_color_sensor():
-                    color_sensor = self.cfg.get_device().sensors[i]
-                    # manual exposure
-                    color_sensor.set_option(rs.option.enable_auto_exposure, False)
-                    color_sensor.set_option(rs.option.exposure, exposure)
-                    # color_sensor.set_option(rs.option.gain, 100)
-                    print("camera exposure: ", color_sensor.get_option(rs.option.exposure) * 0.1, 'ms')
-        else:
-            for i in range(len(self.cfg.get_device().sensors)):
-                if self.cfg.get_device().sensors[i].is_color_sensor():
-                    color_sensor = self.cfg.get_device().sensors[i]
-                    # auto exposure
-                    color_sensor.set_option(rs.option.enable_auto_exposure, True)
-                    color_sensor.set_option(rs.option.auto_exposure_priority, True)
-                    print("camera exposure: ", color_sensor.get_option(rs.option.exposure) * 0.1, 'ms')
-
         print("------ Realsense start info ------ ")
         print("Frame size: " + str(frame_width) + "*" + str(frame_height))
         print("FPS: " + str(fps))
@@ -63,6 +44,43 @@ class Realsense(object):
         print("Depth frame format: ", rs.format.z16)
         print("Depth scale: " + str(self.depth_scale))
         print("Intrinsics: " + str(self.intrinsics))
+
+        # set camera parameters
+        for i in range(len(self.cfg.get_device().sensors)):
+            if self.cfg.get_device().sensors[i].is_color_sensor():
+                color_sensor = self.cfg.get_device().sensors[i]
+
+                # exposure
+                if exposure is not None:
+                    # manual exposure
+                    color_sensor.set_option(rs.option.enable_auto_exposure, False)
+                    color_sensor.set_option(rs.option.exposure, exposure)
+                else:
+                    # auto exposure
+                    color_sensor.set_option(rs.option.enable_auto_exposure, True)
+                    color_sensor.set_option(rs.option.auto_exposure_priority, True)
+
+                print("Exposure: ", color_sensor.get_option(rs.option.exposure) * 0.1, 'ms')
+
+                # white balance
+                if white_balance is not None:
+                    # manual white balance
+                    color_sensor.set_option(rs.option.enable_auto_white_balance, False)
+                    color_sensor.set_option(rs.option.white_balance, white_balance)
+                else:
+                    # auto white balance
+                    color_sensor.set_option(rs.option.enable_auto_white_balance, True)
+
+                print("White balance: ", color_sensor.get_option(rs.option.white_balance))
+
+                # contrast
+                color_sensor.set_option(rs.option.contrast, contrast)
+                print("Contrast: ", color_sensor.get_option(rs.option.contrast))
+
+                # sharpness
+                color_sensor.set_option(rs.option.sharpness, sharpness)
+                print("Sharpness: ", color_sensor.get_option(rs.option.sharpness))
+
         print("---------------------------------- ")
 
     # Get a frame that can be processed in opencv
