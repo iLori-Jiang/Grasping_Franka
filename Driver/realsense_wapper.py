@@ -4,7 +4,7 @@ import cv2
 
 
 class Realsense(object):
-    def __init__(self, frame_width=640, frame_height=480, fps=30, color_format="bgr8"):
+    def __init__(self, frame_width=640, frame_height=480, fps=30, color_format="bgr8", exposure=None):
         # Configure depth and color streams
         self.pipeline = rs.pipeline()
 
@@ -36,6 +36,18 @@ class Realsense(object):
 
         depth_sensor = self.cfg.get_device().first_depth_sensor()
         self.depth_scale = round(depth_sensor.get_depth_scale(), 4)
+
+        if exposure is not None:
+            # set camera parameters
+            for i in range(len(self.cfg.get_device().sensors)):
+                if self.cfg.get_device().sensors[i].is_color_sensor():
+                    # set color camera
+                    color_sensor = self.cfg.get_device().sensors[i]
+                    color_sensor.set_option(rs.option.enable_auto_exposure, 0)  # manual exposure
+                    # color_sensor.set_option(rs.option.enable_auto_exposure, 1)  # auto exposure
+                    color_sensor.set_option(rs.option.exposure, exposure)
+                    # color_sensor.set_option(rs.option.gain, 100)
+                    print("camera exposure: ", color_sensor.get_option(rs.option.exposure) * 0.1, 'ms')
 
         print("------ Realsense start info ------ ")
         print("Frame size: " + str(frame_width) + "*" + str(frame_height))
